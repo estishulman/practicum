@@ -1,0 +1,12 @@
+C:\aaaaaaaaaaaaתכנות\תכנות שנה ב\practicum\הרצאות\VoiceSummarizer.API\DL\bin\Debug\net7.0\DL.deps.json
+C:\aaaaaaaaaaaaתכנות\תכנות שנה ב\practicum\הרצאות\VoiceSummarizer.API\DL\bin\Debug\net7.0\DL.dll
+C:\aaaaaaaaaaaaתכנות\תכנות שנה ב\practicum\הרצאות\VoiceSummarizer.API\DL\bin\Debug\net7.0\DL.pdb
+C:\aaaaaaaaaaaaתכנות\תכנות שנה ב\practicum\הרצאות\VoiceSummarizer.API\DL\obj\Debug\net7.0\DL.csproj.AssemblyReference.cache
+C:\aaaaaaaaaaaaתכנות\תכנות שנה ב\practicum\הרצאות\VoiceSummarizer.API\DL\obj\Debug\net7.0\DL.GeneratedMSBuildEditorConfig.editorconfig
+C:\aaaaaaaaaaaaתכנות\תכנות שנה ב\practicum\הרצאות\VoiceSummarizer.API\DL\obj\Debug\net7.0\DL.AssemblyInfoInputs.cache
+C:\aaaaaaaaaaaaתכנות\תכנות שנה ב\practicum\הרצאות\VoiceSummarizer.API\DL\obj\Debug\net7.0\DL.AssemblyInfo.cs
+C:\aaaaaaaaaaaaתכנות\תכנות שנה ב\practicum\הרצאות\VoiceSummarizer.API\DL\obj\Debug\net7.0\DL.csproj.CoreCompileInputs.cache
+C:\aaaaaaaaaaaaתכנות\תכנות שנה ב\practicum\הרצאות\VoiceSummarizer.API\DL\obj\Debug\net7.0\DL.dll
+C:\aaaaaaaaaaaaתכנות\תכנות שנה ב\practicum\הרצאות\VoiceSummarizer.API\DL\obj\Debug\net7.0\refint\DL.dll
+C:\aaaaaaaaaaaaתכנות\תכנות שנה ב\practicum\הרצאות\VoiceSummarizer.API\DL\obj\Debug\net7.0\DL.pdb
+C:\aaaaaaaaaaaaתכנות\תכנות שנה ב\practicum\הרצאות\VoiceSummarizer.API\DL\obj\Debug\net7.0\ref\DL.dll
