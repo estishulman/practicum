@@ -1,0 +1,33 @@
+# תיקיות של בנייה
+bin/
+obj/
+*.user
+*.suo
+
+# תיקיות של מודולים ב־Node.js
+node_modules/
+
+# קבצי מערכת/IDE
+.vscode/
+.idea/
+
+# תוצרי פיתוח של React/Vite
+dist/
+build/
+
+# קבצי סיכום או קבצי משרד (אם לא צריך אותם)
+*.docx
+*.xlsx
+
+# קבצים שנוצרים על ידי Git
+*.log
+*.lock
+package-lock.json
+yarn.lock
+
+# קבצים שנוצרים על ידי Windows
+Thumbs.db
+Desktop.ini
+
+# קבצים של מערכת macOS
+.DS_Store
