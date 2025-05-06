@@ -43,7 +43,7 @@ const Registration = () => {
         setErrorMessage('');  // Reset the error messagee
         console.log("Sending data:", formData);  // הוסף לוג כדי לוודא שהנתונים תקינים
         try {
-            const res = await axios.post('http://localhost:7273/api/User', {
+            const res = await axios.post('http://localhost:5047/api/User', {
                 name:formData.name,
                 email: formData.email,
                 password: formData.password,
