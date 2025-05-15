@@ -31,7 +31,7 @@ const Login = ({ onLoginSuccess }: { onLoginSuccess: () => void }) => {
        try{
            
            console.log("before");
-            const res=await axios.post('http://localhost:5047/api/User/login',{
+            const res=await axios.post('http://localhost:5047/api/Auth/login',{
                 
                 email:email,
                 password:password
