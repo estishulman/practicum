@@ -7,6 +7,11 @@ using BL.DTOs;
 using DL.Repository;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.Extensions.Configuration;
 
 namespace BL.Services
 {
@@ -58,10 +63,12 @@ namespace BL.Services
     //}
     public class UserService : IUserService
     {
+        private readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-        public UserService(IUserRepository userRepository, IMapper mapper)
-        {
+        public UserService(IUserRepository userRepository, IMapper mapper, IConfiguration configuration)
+            {
+            _configuration = configuration;
             _userRepository = userRepository;
             _mapper = mapper;
         }
@@ -164,7 +171,7 @@ namespace BL.Services
             await _userRepository.DeleteAsync(id);
         }
 
-        public async Task<UserResponseDto?> LoginAsync(UserLoginDto dto)
+        public async Task<AuthResponseDto?> LoginAsync(UserLoginDto dto)
         {
             var user = await _userRepository.GetByEmailAsync(dto.Email); // חיפוש משתמש לפי מייל
             if (user == null)
@@ -179,12 +186,36 @@ namespace BL.Services
             {
                 return null; // אם הסיסמה לא נכונה
             }
-
-            return _mapper.Map<UserResponseDto>(user); // אם הסיסמה נכונה, מחזיר את המידע של המשתמש
+            var token = GenerateToken(user); // כאן תוכל להוסיף לוגיקה ליצירת טוקן JWT אם תרצה
+            var newUser= _mapper.Map<AuthResponseDto>(user);
+            newUser.Token = token;
+            return newUser; // החזרת המשתמש עם הטוקן
         }
 
 
+        public string GenerateToken(User user)
+        {
+            // הכנת רשימת קליימים
+            var claims = new[]
+            {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.Name.ToString()),
+            new Claim(ClaimTypes.Role, user.Role.ToString())
+            } ;
 
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(3),
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
 
 
     }

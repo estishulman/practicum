@@ -15,6 +15,7 @@ namespace BL
         {
             CreateMap<User, UserResponseDto>();
             CreateMap<UserCreateDto, User>();
+            CreateMap<User,AuthResponseDto>();
             CreateMap<UserUpdateDto, User>()
            .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 

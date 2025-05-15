@@ -16,7 +16,7 @@ namespace VoiceSummarizer.API.Controllers
         }
 
         // GET: api/User/{id}
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetUserByIdRoute")]
         public async Task<ActionResult<UserResponseDto>> GetUserById(int id)
         {
             var user = await _userService.GetUserByIdAsync(id);
@@ -35,15 +35,15 @@ namespace VoiceSummarizer.API.Controllers
         }
 
         // POST: api/User
-        [HttpPost]
-        public async Task<ActionResult<UserResponseDto>> CreateUser([FromBody] UserCreateDto user)
-        {
-            if (user == null)
-                return BadRequest();
+        //[HttpPost]
+        //public async Task<ActionResult<UserResponseDto>> CreateUser([FromBody] UserCreateDto user)
+        //{
+        //    if (user == null)
+        //        return BadRequest();
 
-            var createdUser = await _userService.CreateUserAsync(user);
-            return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, createdUser);
-        }
+        //    var createdUser = await _userService.CreateUserAsync(user);
+        //    return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, createdUser);
+        //}
 
         // PUT: api/User/{id}
         [HttpPut("{id}")]
@@ -74,23 +74,7 @@ namespace VoiceSummarizer.API.Controllers
         //    return Ok(user);
         //}
 
-        [HttpPost("login")]
-        public async Task<ActionResult<UserResponseDto>> Login([FromBody] UserLoginDto dto)
-        {
-            try
-            {
-                var user = await _userService.LoginAsync(dto);
-                if (user == null)
-                    return Unauthorized("Invalid email or password.");
-
-                return Ok(user);
-            }
-            catch (Exception ex)
-            {
-                // זמנית - לא להשאיר בפרודקשן!
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
+        
 
     }
 

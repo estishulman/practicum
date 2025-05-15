@@ -15,7 +15,9 @@ namespace BL.IService
         Task<UserResponseDto> CreateUserAsync(UserCreateDto user);
         Task UpdateUserAsync(int id,UserUpdateDto user,int currentUserId);
         Task DeleteUserAsync(int id);
-        Task<UserResponseDto?> LoginAsync(UserLoginDto dto);
+        Task<AuthResponseDto?> LoginAsync(UserLoginDto dto);
+        public string GenerateToken(User user);
+
 
     }
 
