@@ -1,91 +1,150 @@
-import { Box, Button, Modal, Stack, TextField, Typography } from "@mui/material";
+
+
+import { Box, Button, TextField, Typography } from "@mui/material";
 import { FormEvent, useContext, useState } from "react";
 import { UsersContext } from "./UserProvider";
-import axios from "axios";
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    borderRadius: '0px 20px',
-    boxShadow: 24,
-    p: 4,
-};
+import api from "../../services/Api"; // הנתיב לפי המיקום שלך
+
 const Login = ({ onLoginSuccess }: { onLoginSuccess: () => void }) => {
-    const [open, setOpen] = useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    
     const context = useContext(UsersContext);
-    if (!context) {
-        throw new Error("UsersContext must be used within a UsersProvider");
-    }
+
+    if (!context) throw new Error("UsersContext must be used within a UsersProvider");
+
     const { dispatch } = context;
+
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-       e.preventDefault()
-       handleClose()
-       try{
-           
-           console.log("before");
-            const res=await axios.post('http://localhost:5047/api/Auth/login',{
+        e.preventDefault();
+        setIsLoading(true);
+        setErrorMessage("");
+        
+        try {
+            const res = await api.post("/Auth/login", {
+                email,
+                password,
+            });
+
+            const token = res.data.token;
+            localStorage.setItem("token", token);
+            
+            dispatch({ type: "LOGIN_USER", data: res.data.user });
+
+            onLoginSuccess();
+            alert("התחברות בוצעה בהצלחה!");
+            setEmail("");
+            setPassword("");
+        } catch (error: any) {
+            setErrorMessage(error.response?.data?.message || "התחברות נכשלה");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <Box sx={{ padding: '40px', maxWidth: '400px', margin: '0 auto' }}>
+            <form onSubmit={handleSubmit}>
+                <Typography 
+                    variant="h4" 
+                    sx={{ 
+                        marginBottom: '32px',
+                        textAlign: 'center',
+                        fontWeight: 900,
+                        background: 'linear-gradient(135deg, #2196f3, #6366f1, #9c27b0)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text'
+                    }}
+                >
+                    כניסה למערכת
+                </Typography>
                 
-                email:email,
-                password:password
-            })
-            dispatch({
-                type:'LOGIN_USER',
-                data:res.data.user
-            })
-            console.log("after");
-                if(res.data.message){
-                    onLoginSuccess()
-                    alert('LOGIN SUCCESSFULL')
-                    setEmail('')
-                    setPassword('')
-                }
-        }
-        catch(e){
-            alert('LOGIN-FAIL')
-        }
-        }
-    return <>
-        <Stack direction="row" spacing={2} sx={{ position: 'absolute', top: 0, left: 0, padding: '16px',zIndex:10 }}>
-            <Button onClick={handleOpen} variant="contained" size="large">{'Login'}</Button>
-        </Stack>
-        <Modal
-            open={open}
-            onClose={handleClose}>
-            <Box sx={style}>
-                <form onSubmit={handleSubmit}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Login
+                {errorMessage && (
+                    <Typography 
+                        color="error" 
+                        sx={{ 
+                            marginBottom: '16px',
+                            textAlign: 'center',
+                            padding: '12px',
+                            backgroundColor: '#ffebee',
+                            borderRadius: '8px',
+                            border: '1px solid #ffcdd2'
+                        }}
+                    >
+                        {errorMessage}
                     </Typography>
-                    <TextField
-                        id="email"
-                        label="userEmail"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        fullWidth
-                        margin="normal"
-                    />
-                    <TextField
-                        id="password"
-                        label="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        fullWidth
-                        margin="normal"
-                    />
-                    <Button type="submit" variant="contained">Continue</Button>
-                </form>
-            </Box>
-        </Modal>
-    </>
-}
-export default Login
+                )}
+                
+                <TextField
+                    label="אימייל"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    fullWidth
+                    margin="normal"
+                    required
+                    sx={{
+                        '& .MuiOutlinedInput-root': {
+                            borderRadius: '12px',
+                            '&:hover fieldset': {
+                                borderColor: '#2196f3',
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderColor: '#2196f3',
+                            },
+                        },
+                    }}
+                />
+                
+                <TextField
+                    label="סיסמה"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    fullWidth
+                    margin="normal"
+                    required
+                    sx={{
+                        marginBottom: '24px',
+                        '& .MuiOutlinedInput-root': {
+                            borderRadius: '12px',
+                            '&:hover fieldset': {
+                                borderColor: '#2196f3',
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderColor: '#2196f3',
+                            },
+                        },
+                    }}
+                />
+                
+                <Button 
+                    type="submit" 
+                    variant="contained" 
+                    fullWidth
+                    disabled={isLoading}
+                    sx={{
+                        padding: '16px',
+                        borderRadius: '12px',
+                        fontSize: '16px',
+                        fontWeight: 700,
+                        background: 'linear-gradient(135deg, #2196f3, #6366f1, #9c27b0)',
+                        '&:hover': {
+                            background: 'linear-gradient(135deg, #1976d2, #5e35b1, #7b1fa2)',
+                            transform: 'translateY(-2px)',
+                            boxShadow: '0 8px 25px rgba(33, 150, 243, 0.4)',
+                        },
+                        transition: 'all 0.3s ease',
+                    }}
+                >
+                    {isLoading ? 'מתחבר...' : 'התחבר'}
+                </Button>
+            </form>
+        </Box>
+    );
+};
+
+export default Login;

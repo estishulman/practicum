@@ -1,16 +1,25 @@
 import './App.css'
 import Login from './components/login/Login'
-import UsersProvider from './components/login/UserProvider'
+import { UsersProvider } from './components/login/UserProvider';
 import Registration from './components/login/Registeration'
-
+import FileUploader from './components/files/FileUploader';
+import FileList from './components/files/FileList';
+import ShowSummarizes from './components/ShowSummarizes';
+import Home from './components/Home';
+import { RouterProvider } from 'react-router-dom';
+import router from './Router';
 function App() {
   // const [count, setCount] = useState(0)
 
   return (
     <>
      <UsersProvider>
-      <Login onLoginSuccess={() => console.log('Login successful!')} />
-        <Registration/>
+      {/* <Login onLoginSuccess={() => console.log('Login successful!')} />
+        <Registration/> */}
+        {/* <FileUploader></FileUploader>
+        <FileList></FileList>
+        <ShowSummarizes></ShowSummarizes> */}
+        <RouterProvider router={router} />
     </UsersProvider>
       {/* <div>
         <a href="https://vite.dev" target="_blank">
