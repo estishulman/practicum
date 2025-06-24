@@ -19,6 +19,7 @@ namespace VoiceSummarizer.API.Controllers
 
         // GET: api/Category/{id}
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<CategoryResponseDto>> GetCategoryById(int id)
         {
             var category = await _categoryService.GetCategoryByIdAsync(id);
@@ -31,6 +32,7 @@ namespace VoiceSummarizer.API.Controllers
 
         // GET: api/Category
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<CategoryResponseDto>>> GetAllCategories()
         {
             var categories = await _categoryService.GetAllCategoriesAsync();

@@ -20,6 +20,7 @@ namespace VoiceSummarizer.API.Controllers
 
         // GET: api/UserFile/{id}
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<UserFileResponseDto>> GetFileById(int id)
         {
             var file = await _userFileService.GetFileByIdAsync(id);
@@ -32,6 +33,7 @@ namespace VoiceSummarizer.API.Controllers
 
         // GET: api/UserFile
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<UserFileResponseDto>>> GetAllFiles()
         {
             var files = await _userFileService.GetAllFilesAsync();

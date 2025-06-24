@@ -31,7 +31,8 @@ namespace BL.Services
                 audio_url = audioUrl,
                 summarization = true,
                 summary_type = "bullets",       // יכול להיות גם "gist" או "headline"
-                summary_model = "informative"   // זה מה שהיה חסר!
+                summary_model = "informative",   // זה מה שהיה חסר!
+                language = "he"  // קוד שפה לעברית
             };
 
             var json = JsonConvert.SerializeObject(payload);

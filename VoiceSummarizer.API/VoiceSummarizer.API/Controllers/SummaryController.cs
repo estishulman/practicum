@@ -30,6 +30,7 @@ namespace VoiceSummarizer.API.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<SummaryResponseDto>>> GetAllSummaries()
         {
             var summaries = await _summaryService.GetAllSummariesAsync();
