@@ -57,13 +57,9 @@ const Home: React.FC = () => {
   const [recentLectures, setRecentLectures] = useState<UserFile[]>([]);
   const [allLectures, setAllLectures] = useState<UserFile[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [lecturers, setLecturers] = useState<User[]>([]);
+  const [,setLecturers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  // Search and filter states
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   // Modal states for summary
   const [showSummaryModal, setShowSummaryModal] = useState(false);
@@ -154,54 +150,6 @@ const Home: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  // Handle search - navigate to lectures page with search parameter
-  const handleSearch = () => {
-    if (searchTerm.trim() === '') {
-      // If no search term, go to general lectures page
-      navigate('/files', { state: { searchTerm: '' } });
-      return;
-    }
-    
-    // Check if search matches a specific category
-    const matchingCategory = categories.find(cat => 
-      cat.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    
-    if (matchingCategory) {
-      // Navigate to category lectures page
-      navigate(`/topics/${matchingCategory.id}/lectures`, { 
-        state: { 
-          categoryName: matchingCategory.name,
-          searchTerm: searchTerm.trim()
-        } 
-      });
-      return;
-    }
-
-    // Check if search matches a lecturer
-    const matchingLecturer = lecturers.find(lecturer => 
-      lecturer.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    
-    if (matchingLecturer) {
-      // Navigate to lecturer lectures page
-      navigate(`/lecturers/${matchingLecturer.id}/lectures`, { 
-        state: { 
-          lecturerName: matchingLecturer.name,
-          searchTerm: searchTerm.trim()
-        } 
-      });
-      return;
-    }
-
-    // General search - navigate to files page with search term
-    navigate('/files', { 
-      state: { 
-        searchTerm: searchTerm.trim() 
-      } 
-    });
   };
 
   // Navigate to category lectures
@@ -322,7 +270,7 @@ const Home: React.FC = () => {
     <div className="home-page">
       <Header currentPage="home" />
       
-      {/* Hero Section */}
+      {/* Hero Section - ללא חיפוש */}
       <section className="hero-section">
         <div className="hero-content">
           <div className="hero-text">
@@ -330,39 +278,35 @@ const Home: React.FC = () => {
             <p className="hero-subtitle">
               גלה, למד והתפתח עם מגוון רחב של הרצאות איכותיות מהמרצים הטובים ביותר
             </p>
-          </div>
-          
-          {/* Search Section */}
-          <div className="search-section">
-            <div className="search-container">
-              <div className="search-filters">
-                <select 
-                  className="search-filter"
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                >
-                  <option value="all">כל הקטגוריות</option>
-                  {categories.map(category => (
-                    <option key={category.id} value={category.id.toString()}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              
-              <div className="search-input-container">
-                <input 
-                  type="text"
-                  className="search-input"
-                  placeholder="חפש הרצאות, מרצים או נושאים..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                />
-                <button className="search-btn" onClick={handleSearch}>
-                  חפש
-                </button>
-              </div>
+            
+            {/* Action Button */}
+            <div className="hero-action" style={{ marginTop: '30px' }}>
+              <button 
+                className="primary-action-btn"
+                onClick={handleViewAllLectures}
+                style={{
+                  padding: '16px 32px',
+                  fontSize: '18px',
+                  fontWeight: 700,
+                  borderRadius: '16px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #4caf50, #66bb6a)',
+                  color: 'white',
+                  cursor: 'pointer',
+                  boxShadow: '0 8px 24px rgba(76, 175, 80, 0.3)',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 12px 32px rgba(76, 175, 80, 0.4)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(76, 175, 80, 0.3)';
+                }}
+              >
+                צפה בכל ההרצאות ←
+              </button>
             </div>
           </div>
         </div>

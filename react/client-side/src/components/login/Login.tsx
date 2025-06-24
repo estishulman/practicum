@@ -34,7 +34,6 @@ const Login = ({ onLoginSuccess }: { onLoginSuccess: () => void }) => {
             dispatch({ type: "LOGIN_USER", data: res.data.user });
 
             onLoginSuccess();
-            alert("התחברות בוצעה בהצלחה!");
             setEmail("");
             setPassword("");
         } catch (error: any) {
