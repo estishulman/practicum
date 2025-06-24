@@ -5,19 +5,15 @@ import './Header.css';
 interface HeaderProps {
   currentPage?: string;
   userName?: string;
-  userRole?: 'admin' | 'lecturer' | 'student';
   onLoginClick?: () => void;
   onRegisterClick?: () => void;
-  onLoginSuccess?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
   currentPage = 'home',
   userName,
-  userRole,
   onLoginClick,
-  onRegisterClick,
-  onLoginSuccess
+  onRegisterClick
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -30,7 +26,7 @@ const Header: React.FC<HeaderProps> = ({
       setIsScrolled(window.scrollY > 20);
     };
 
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = () => {
       if (showUserDropdown) {
         setShowUserDropdown(false);
       }

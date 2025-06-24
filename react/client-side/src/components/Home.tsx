@@ -1,446 +1,3 @@
-
-// import React, { useState, useEffect } from 'react';
-// import Header from './Header';
-// import Login from './login/Login';
-// import Registration from './login/Registeration';
-// import './Home.css';
-
-// interface Lecture {
-//   id: number;
-//   title: string;
-//   lecturer: string;
-//   category: string;
-//   date: string;
-//   duration?: string;
-//   image?: string;
-//   views?: number;
-//   rating?: number;
-// }
-
-// const newLectures: Lecture[] = [
-//   {
-//     id: 1,
-//     title: "מהפכת הבינה המלאכותית בעולם העסקים",
-//     lecturer: "פרופ' דן כהן",
-//     category: "טכנולוגיה",
-//     date: "2024-03-15",
-//     duration: "45 דקות",
-//     views: 1250,
-//     rating: 4.8
-//   },
-//   {
-//     id: 2,
-//     title: "עקרונות ההנהגה המודרנית",
-//     lecturer: "ד״ר שרה לוי",
-//     category: "ניהול",
-//     date: "2024-03-12",
-//     duration: "38 דקות",
-//     views: 892,
-//     rating: 4.6
-//   },
-//   {
-//     id: 3,
-//     title: "פסיכולוגיה חיובית ואושר בעבודה",
-//     lecturer: "ד״ר אלון רוזן",
-//     category: "פסיכולוגיה",
-//     date: "2024-03-10",
-//     duration: "52 דקות",
-//     views: 743,
-//     rating: 4.9
-//   },
-//   {
-//     id: 4,
-//     title: "כלכלה דיגיטלית במאה ה-21",
-//     lecturer: "פרופ' מיכל ברק",
-//     category: "כלכלה",
-//     date: "2024-03-08",
-//     duration: "41 דקות",
-//     views: 1156,
-//     rating: 4.7
-//   },
-//   {
-//     id: 5,
-//     title: "חדשנות וקרייטיביות בארגון",
-//     lecturer: "ד״ר יוסי פרידמן",
-//     category: "חדשנות",
-//     date: "2024-03-05",
-//     duration: "47 דקות",
-//     views: 634,
-//     rating: 4.5
-//   },
-//   {
-//     id: 6,
-//     title: "סייבר וביטחון מידע עבור מנהלים",
-//     lecturer: "רועי אבני",
-//     category: "אבטחה",
-//     date: "2024-03-03",
-//     duration: "55 דקות",
-//     views: 987,
-//     rating: 4.8
-//   }
-// ];
-
-// const featuredLectures: Lecture[] = [
-//   {
-//     id: 7,
-//     title: "אמנות התקשורת הבין-אישית",
-//     lecturer: "ד״ר רונית אבן",
-//     category: "תקשורת",
-//     date: "2024-02-28",
-//     duration: "43 דקות",
-//     views: 2150,
-//     rating: 4.9
-//   },
-//   {
-//     id: 8,
-//     title: "מכניקת הקוונטים למתחילים",
-//     lecturer: "פרופ' עמית גולדשטין",
-//     category: "מדע",
-//     date: "2024-02-25",
-//     duration: "62 דקות",
-//     views: 1876,
-//     rating: 4.7
-//   },
-//   {
-//     id: 9,
-//     title: "אסטרטגיות השקעה מנצחות",
-//     lecturer: "נועם תמיר",
-//     category: "השקעות",
-//     date: "2024-02-22",
-//     duration: "39 דקות",
-//     views: 3245,
-//     rating: 4.8
-//   },
-//   {
-//     id: 10,
-//     title: "פילוסופיה מעשית לחיים טובים",
-//     lecturer: "פרופ' אורי זימן",
-//     category: "פילוסופיה",
-//     date: "2024-02-20",
-//     duration: "51 דקות",
-//     views: 1567,
-//     rating: 4.9
-//   }
-// ];
-
-// const Home: React.FC = () => {
-//   const [savedLectures, setSavedLectures] = useState<Set<number>>(new Set());
-//   const [searchQuery, setSearchQuery] = useState('');
-//   const [searchFilter, setSearchFilter] = useState<'all' | 'lecturer' | 'category'>('all');
-  
-//   // מצבים לקומפוננטות Login ו-Registration
-//   const [showLogin, setShowLogin] = useState(false);
-//   const [showRegistration, setShowRegistration] = useState(false);
-
-//   // useEffect למניעת גלילה כשמודל פתוח
-//   useEffect(() => {
-//     if (showLogin || showRegistration) {
-//       document.body.style.overflow = 'hidden';
-//       document.body.classList.add('modal-open');
-//     } else {
-//       document.body.style.overflow = 'unset';
-//       document.body.classList.remove('modal-open');
-//     }
-
-//     // ניקוי כשהקומפוננטה נהרסת
-//     return () => {
-//       document.body.style.overflow = 'unset';
-//       document.body.classList.remove('modal-open');
-//     };
-//   }, [showLogin, showRegistration]);
-
-//   // פונקציות לטיפול בהתחברות והרשמה
-//   const handleLoginSuccess = () => {
-//     setShowLogin(false);
-//     console.log('Login successful');
-//   };
-
-//   // פונקציות שתחברי לAPI שלך
-//   const handleSaveLecture = (lectureId: number) => {
-//     const newSaved = new Set(savedLectures);
-//     if (newSaved.has(lectureId)) {
-//       newSaved.delete(lectureId);
-//     } else {
-//       newSaved.add(lectureId);
-//     }
-//     setSavedLectures(newSaved);
-//     console.log(`Save/Unsave lecture ${lectureId}`);
-//   };
-
-//   const handleDownload = (lectureId: number) => {
-//     console.log(`Download lecture ${lectureId}`);
-//   };
-
-//   const handleOpenSummary = (lectureId: number) => {
-//     console.log(`Open summary for lecture ${lectureId}`);
-//   };
-
-//   const handlePlayLecture = (lectureId: number) => {
-//     console.log(`Play lecture ${lectureId}`);
-//   };
-
-//   const handleSearch = () => {
-//     console.log(`Search: ${searchQuery}, Filter: ${searchFilter}`);
-//   };
-
-//   const formatDate = (dateString: string) => {
-//     const date = new Date(dateString);
-//     return date.toLocaleDateString('he-IL');
-//   };
-
-//   const renderStars = (rating: number) => {
-//     return '⭐'.repeat(Math.floor(rating));
-//   };
-
-//   const LectureCard: React.FC<{ lecture: Lecture; featured?: boolean }> = ({ 
-//     lecture, 
-//     featured = false 
-//   }) => (
-//     <div className={`lecture-card ${featured ? 'featured' : ''}`}>
-//       <div className="card-image" onClick={() => handlePlayLecture(lecture.id)}>
-//         {lecture.image ? (
-//           <img src={lecture.image} alt={lecture.title} />
-//         ) : (
-//           <div className="default-image">
-//             <div className="image-icon">🎓</div>
-//           </div>
-//         )}
-//         <div className="play-overlay">
-//           <div className="play-button">▶</div>
-//         </div>
-//       </div>
-      
-//       <div className="card-content">
-//         <div className="card-header">
-//           <span className="category-tag">{lecture.category}</span>
-//           <div className="card-actions">
-//             <button 
-//               className={`action-btn save-btn ${savedLectures.has(lecture.id) ? 'saved' : ''}`}
-//               onClick={() => handleSaveLecture(lecture.id)}
-//               title={savedLectures.has(lecture.id) ? 'הסר משמורים' : 'שמור לצפייה מאוחר יותר'}
-//             >
-//               {savedLectures.has(lecture.id) ? '❤️' : '🤍'}
-//             </button>
-//             <button 
-//               className="action-btn download-btn"
-//               onClick={() => handleDownload(lecture.id)}
-//               title="הורד הרצאה"
-//             >
-//               ⬇️
-//             </button>
-//             <button 
-//               className="action-btn summary-btn"
-//               onClick={() => handleOpenSummary(lecture.id)}
-//               title="פתח סיכום"
-//             >
-//               📄
-//             </button>
-//           </div>
-//         </div>
-        
-//         <h3 className="card-title" onClick={() => handlePlayLecture(lecture.id)}>
-//           {lecture.title}
-//         </h3>
-        
-//         <div className="card-info">
-//           <div className="lecturer-info">
-//             <span className="lecturer-name">🎤 {lecture.lecturer}</span>
-//           </div>
-          
-//           <div className="lecture-meta">
-//             <span className="date">📅 {formatDate(lecture.date)}</span>
-//             {lecture.duration && (
-//               <span className="duration">⏱️ {lecture.duration}</span>
-//             )}
-//           </div>
-          
-//           {(lecture.views || lecture.rating) && (
-//             <div className="lecture-stats">
-//               {lecture.views && (
-//                 <span className="views">👁️ {lecture.views.toLocaleString()}</span>
-//               )}
-//               {lecture.rating && (
-//                 <span className="rating">
-//                   {renderStars(lecture.rating)} {lecture.rating}
-//                 </span>
-//               )}
-//             </div>
-//           )}
-//         </div>
-//       </div>
-//     </div>
-//   );
-
-//   return (
-//     <div className={`${(showLogin || showRegistration) ? 'modal-active' : ''}`}>
-//       {/* Header קבוע עם פונקציות לפתיחת Login/Registration */}
-//       <Header 
-//         currentPage="home" 
-//         onLoginClick={() => setShowLogin(true)}
-//         onRegisterClick={() => setShowRegistration(true)}
-//       />
-      
-//       {/* התוכן הראשי - עם padding-top בגלל ה-Header הקבוע */}
-//       <div className="home-page" style={{ paddingTop: '80px' }}>
-//         {/* Hero Section */}
-//         <section className="hero-section">
-//           <div className="hero-content">
-//             <div className="hero-text">
-//               <h1 className="hero-title">
-//                 רעיון טוב יכול לשנות תודעה
-//               </h1>
-//               <p className="hero-subtitle">
-//                 הרצאות שמשלבות ידע, ניסיון והשראה – במילים מדויקות ובגובה העיניים
-//               </p>
-//             </div>
-            
-//             {/* Search Section */}
-//             <div className="search-section">
-//               <div className="search-container">
-//                 <div className="search-filters">
-//                   <select 
-//                     className="search-filter"
-//                     value={searchFilter}
-//                     onChange={(e) => setSearchFilter(e.target.value as 'all' | 'lecturer' | 'category')}
-//                   >
-//                     <option value="all">הכל</option>
-//                     <option value="lecturer">לפי מרצה</option>
-//                     <option value="category">לפי נושא</option>
-//                   </select>
-//                 </div>
-//                 <div className="search-input-container">
-//                   <input 
-//                     type="text"
-//                     className="search-input"
-//                     placeholder={
-//                       searchFilter === 'lecturer' ? 'חפש מרצה...' :
-//                       searchFilter === 'category' ? 'חפש נושא...' :
-//                       'חפש הרצאות, מרצים או נושאים...'
-//                     }
-//                     value={searchQuery}
-//                     onChange={(e) => setSearchQuery(e.target.value)}
-//                     onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-//                   />
-//                   <button className="search-btn" onClick={handleSearch}>
-//                     🔍
-//                   </button>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-          
-//           <div className="hero-visual">
-//             <div className="floating-elements">
-//               <div className="element element-1">💡</div>
-//               <div className="element element-2">🎯</div>
-//               <div className="element element-3">🚀</div>
-//               <div className="element element-4">📚</div>
-//               <div className="element element-5">⭐</div>
-//               <div className="element element-6">🎓</div>
-//             </div>
-//           </div>
-//         </section>
-
-//         {/* New Lectures Section */}
-//         <section className="lectures-section">
-//           <div className="section-header">
-//             <h2 className="section-title">הרצאות חדשות</h2>
-//             <p className="section-subtitle">התוכן החדש והמעודכן ביותר מהמרצים המובילים</p>
-//           </div>
-          
-//           <div className="lectures-grid">
-//             {newLectures.map(lecture => (
-//               <LectureCard key={lecture.id} lecture={lecture} />
-//             ))}
-//           </div>
-          
-//           <div className="section-footer">
-//             <button className="view-all-btn" onClick={() => console.log('Navigate to all new lectures')}>
-//               צפה בכל ההרצאות החדשות
-//               <span className="arrow">←</span>
-//             </button>
-//           </div>
-//         </section>
-
-//         {/* Featured Lectures Section */}
-//         <section className="lectures-section featured-section">
-//           <div className="section-header">
-//             <h2 className="section-title">הרצאות נבחרות</h2>
-//             <p className="section-subtitle">הקולקציה המובחרת של התוכן הכי איכותי ומבוקש</p>
-//           </div>
-          
-//           <div className="lectures-grid featured-grid">
-//             {featuredLectures.map(lecture => (
-//               <LectureCard key={lecture.id} lecture={lecture} featured={true} />
-//             ))}
-//           </div>
-          
-//           <div className="section-footer">
-//             <button className="view-all-btn featured-btn" onClick={() => console.log('Navigate to all featured lectures')}>
-//               צפה בכל ההרצאות הנבחרות
-//               <span className="arrow">←</span>
-//             </button>
-//           </div>
-//         </section>
-
-//         {/* Stats Section */}
-//         <section className="stats-section">
-//           <div className="stats-container">
-//             <div className="stat-item">
-//               <div className="stat-number">1,250+</div>
-//               <div className="stat-label">הרצאות איכות</div>
-//             </div>
-//             <div className="stat-item">
-//               <div className="stat-number">150+</div>
-//               <div className="stat-label">מרצים מובילים</div>
-//             </div>
-//             <div className="stat-item">
-//               <div className="stat-number">50,000+</div>
-//               <div className="stat-label">סטודנטים פעילים</div>
-//             </div>
-//             <div className="stat-item">
-//               <div className="stat-number">25+</div>
-//               <div className="stat-label">תחומי ידע</div>
-//             </div>
-//           </div>
-//         </section>
-//       </div>
-
-//       {/* מודלים לLogin ו-Registration */}
-//       {showLogin && (
-//         <div className="modal-overlay" onClick={() => setShowLogin(false)}>
-//           <div className="modal-wrapper" onClick={(e) => e.stopPropagation()}>
-//             <Login onLoginSuccess={handleLoginSuccess} />
-//             <button 
-//               className="modal-close-btn" 
-//               onClick={() => setShowLogin(false)}
-//             >
-//               ✕
-//             </button>
-//           </div>
-//         </div>
-//       )}
-
-//       {showRegistration && (
-//         <div className="modal-overlay" onClick={() => setShowRegistration(false)}>
-//           <div className="modal-wrapper" onClick={(e) => e.stopPropagation()}>
-//             <Registration />
-//             <button 
-//               className="modal-close-btn" 
-//               onClick={() => setShowRegistration(false)}
-//             >
-//               ✕
-//             </button>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default Home;
-
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from './Header';
@@ -449,6 +6,14 @@ import categoryService from '../services/caregoryService';
 import lecturerService from '../services/LecturerService';
 import './Home.css';
 
+// File Status Enum - תואם לשרת
+enum FileStatus {
+  Pending = 0,
+  Processing = 1,
+  Completed = 2,
+  Failed = 3
+}
+
 // Interfaces
 interface UserFile {
   id: number;
@@ -456,12 +21,21 @@ interface UserFile {
   fileType: string;
   uploadDate: string;
   url?: string;
-  status: 'Pending' | 'Processing' | 'Completed' | 'Failed';
+  status: number; // מספר במקום string
   userName: string;
   categoryName: string;
   summaryId?: number;
+  summaryContent?: string;
   userId: number;
   categoryId: number;
+}
+
+interface Summary {
+  id: number;
+  content: string;
+  createdAt: string;
+  language: string;
+  fileId: number;
 }
 
 interface Category {
@@ -484,13 +58,16 @@ const Home: React.FC = () => {
   const [allLectures, setAllLectures] = useState<UserFile[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [lecturers, setLecturers] = useState<User[]>([]);
-  const [allUsers, setAllUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
   // Search and filter states
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  // Modal states for summary
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
+  const [selectedSummary, setSelectedSummary] = useState<Summary | null>(null);
 
   // Stats for footer
   const [stats, setStats] = useState({
@@ -499,6 +76,27 @@ const Home: React.FC = () => {
     totalCategories: 0,
     totalUsers: 0
   });
+
+  // Utility functions for status
+  const getStatusText = (status: number): string => {
+    switch (status) {
+      case FileStatus.Completed: return 'הושלם';
+      case FileStatus.Processing: return 'בעיבוד';
+      case FileStatus.Failed: return 'נכשל';
+      case FileStatus.Pending:
+      default: return 'ממתין';
+    }
+  };
+
+  const getStatusColor = (status: number): string => {
+    switch (status) {
+      case FileStatus.Completed: return '#4caf50';
+      case FileStatus.Processing: return '#ff9800';
+      case FileStatus.Failed: return '#f44336';
+      case FileStatus.Pending:
+      default: return '#666';
+    }
+  };
 
   // Fetch all data on component mount
   useEffect(() => {
@@ -540,7 +138,6 @@ const Home: React.FC = () => {
         console.warn('All users endpoint not found, using lecturers count');
         allUsersData = lecturersData;
       }
-      setAllUsers(allUsersData);
 
       // Calculate stats - ALL lectures (not just completed)
       setStats({
@@ -640,26 +237,6 @@ const Home: React.FC = () => {
     return '📁';
   };
 
-  // Get status text in Hebrew
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'Completed': return 'הושלם';
-      case 'Processing': return 'בעיבוד';
-      case 'Failed': return 'נכשל';
-      default: return 'ממתין';
-    }
-  };
-
-  // Get status color
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Completed': return '#4caf50';
-      case 'Processing': return '#ff9800';
-      case 'Failed': return '#f44336';
-      default: return '#666';
-    }
-  };
-
   // Download file
   const downloadFile = (url: string, fileName: string) => {
     if (url) {
@@ -672,17 +249,54 @@ const Home: React.FC = () => {
     }
   };
 
-  // View summary
-  const viewSummary = async (summaryId: number) => {
+  // View summary - תיקון הפונקציה
+  const viewSummary = async (lecture: UserFile) => {
     try {
-      const response = await api.get(`/Summary/${summaryId}`);
-      // You can implement a modal or navigate to summary page
-      console.log('Summary:', response.data);
-      alert('פתיחת סיכום - ניתן להוסיף מודל או עמוד ייעודי');
+      console.log('👁️ Viewing summary for lecture:', {
+        lectureId: lecture.id,
+        fileName: lecture.fileName,
+        summaryId: lecture.summaryId,
+        hasSummaryContent: !!lecture.summaryContent
+      });
+
+      if (lecture.summaryContent) {
+        // אם יש תוכן סיכום ישירות - השתמש בו
+        console.log('📋 Using direct summary content');
+        setSelectedSummary({
+          id: lecture.summaryId!,
+          content: lecture.summaryContent,
+          createdAt: new Date().toISOString(),
+          language: 'he',
+          fileId: lecture.id
+        });
+        setShowSummaryModal(true);
+      } else if (lecture.summaryId) {
+        // אחרת - בצע קריאה נפרדת
+        console.log('📡 Fetching summary from API');
+        const response = await api.get(`/Summary/${lecture.summaryId}`);
+        setSelectedSummary(response.data);
+        setShowSummaryModal(true);
+      } else {
+        console.log('❌ No summary available');
+        setError('לא נמצא סיכום עבור הרצאה זו');
+      }
     } catch (err) {
-      console.error('Error fetching summary:', err);
-      alert('שגיאה בטעינת הסיכום');
+      console.error('❌ Error fetching summary:', err);
+      setError('שגיאה בטעינת הסיכום');
     }
+  };
+
+  // Download summary
+  const downloadSummary = (summary: Summary, fileName: string) => {
+    const blob = new Blob([summary.content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `סיכום-${fileName}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   if (loading) {
@@ -778,6 +392,20 @@ const Home: React.FC = () => {
           border: '1px solid #f44336'
         }}>
           {error}
+          <button 
+            onClick={() => setError(null)}
+            style={{
+              marginLeft: '10px',
+              padding: '5px 10px',
+              background: 'transparent',
+              border: '1px solid #c62828',
+              borderRadius: '4px',
+              color: '#c62828',
+              cursor: 'pointer'
+            }}
+          >
+            ✕
+          </button>
         </div>
       )}
 
@@ -816,7 +444,7 @@ const Home: React.FC = () => {
                     {lecture.summaryId && (
                       <button 
                         className="action-btn summary-btn"
-                        onClick={() => viewSummary(lecture.summaryId!)}
+                        onClick={() => viewSummary(lecture)}
                         title="צפה בסיכום"
                       >
                         📝
@@ -942,6 +570,149 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Summary Modal */}
+      {showSummaryModal && selectedSummary && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '20px'
+          }}
+          onClick={() => setShowSummaryModal(false)}
+        >
+          <div 
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '24px',
+              padding: '32px',
+              maxWidth: '800px',
+              width: '100%',
+              maxHeight: '80vh',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div style={{ marginBottom: '24px', textAlign: 'center' }}>
+              <h2 style={{ 
+                fontSize: '1.5rem',
+                fontWeight: 900,
+                background: 'linear-gradient(135deg, #4caf50, #66bb6a)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                margin: 0
+              }}>
+                סיכום ההרצאה
+              </h2>
+            </div>
+            
+            {/* Modal Content */}
+            <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ 
+                backgroundColor: '#f8f9fa', 
+                borderRadius: '12px', 
+                padding: '24px',
+                marginBottom: '16px',
+                maxHeight: '400px',
+                overflowY: 'auto',
+                border: '1px solid #e5e5e5',
+                flex: 1
+              }}>
+                <div style={{ 
+                  whiteSpace: 'pre-wrap', 
+                  lineHeight: 1.6,
+                  fontFamily: 'inherit',
+                  color: '#1a1a1a',
+                }}>
+                  {selectedSummary.content}
+                </div>
+              </div>
+              
+              <div style={{ 
+                borderTop: '1px solid #e5e5e5', 
+                paddingTop: '16px',
+                marginBottom: '16px'
+              }} />
+              
+              <div style={{ 
+                color: '#666',
+                fontSize: '13px',
+                marginBottom: '24px'
+              }}>
+                נוצר ב: {new Date(selectedSummary.createdAt).toLocaleDateString('he-IL')} | 
+                שפה: {selectedSummary.language === 'he' ? 'עברית' : selectedSummary.language}
+              </div>
+            </div>
+            
+            {/* Modal Actions */}
+            <div style={{ 
+              display: 'flex', 
+              gap: '12px', 
+              justifyContent: 'flex-end'
+            }}>
+              <button 
+                onClick={() => setShowSummaryModal(false)}
+                style={{
+                  padding: '12px 20px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  backgroundColor: '#f8f9fa',
+                  color: '#666',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: 600
+                }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#e9ecef'}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'}
+              >
+                סגור
+              </button>
+              <button
+                onClick={() => {
+                  const lecture = recentLectures.find(l => l.summaryId === selectedSummary.id);
+                  downloadSummary(selectedSummary, lecture?.fileName || 'הרצאה');
+                }}
+                style={{
+                  padding: '12px 20px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #4caf50, #66bb6a)',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(135deg, #388e3c, #4caf50)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(135deg, #4caf50, #66bb6a)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                ⬇ הורד סיכום
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
