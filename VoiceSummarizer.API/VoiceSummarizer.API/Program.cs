@@ -11,14 +11,48 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using Amazon.S3;
+using Amazon;
+using Amazon.Extensions.NETCore.Setup;
+using Amazon.Runtime;
+using Microsoft.Extensions.DependencyInjection;
+
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.AddConsole();
 
 // הזרקת שירותים
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ISummaryService, SummaryService>();
 builder.Services.AddScoped<IUserFileService, UserFileService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IS3Service,S3Service>();
+builder.Services.AddHttpClient<IAssemblyAiService, AssemblyAiService>();
+builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+//builder.Services.AddAWSService<IAmazonS3>();
+
+var awsOptions = builder.Configuration.GetSection("AWS");
+string region = awsOptions["Region"] ?? "us-east-1";
+string accessKeyId = awsOptions["AccessKey"];
+string secretAccessKey = awsOptions["SecretKey"];
+
+if (string.IsNullOrEmpty(accessKeyId) || string.IsNullOrEmpty(secretAccessKey))
+{
+throw new InvalidOperationException("AWS credentials are missing from appsettings.json.");
+}
+
+builder.Services.AddSingleton<IAmazonS3>(sp =>
+{
+    var config = new AmazonS3Config
+    {
+        RegionEndpoint = RegionEndpoint.GetBySystemName(region)
+    };
+
+    var credentials = new BasicAWSCredentials(accessKeyId, secretAccessKey);
+    return new AmazonS3Client(credentials, config);
+});
+
+
 
 // הזרקת רפוזיטוריז
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
@@ -74,7 +108,8 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins(
                     "http://localhost:5173",// זה הפורט של React שלך
-                    "https://practicum-react-frontside.onrender.com"
+                    "https://practicum-react-frontside.onrender.com",
+                    "http://localhost:4200"
                 )
                 .AllowAnyHeader()
                 .AllowAnyMethod();

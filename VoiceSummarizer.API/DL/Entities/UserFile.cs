@@ -21,7 +21,9 @@ namespace DL.Entities
         public int UserId { get; set; }
         [JsonIgnore] // מונע רינדור לולאה אינסופית
         public User? User { get; set; }
-        public int? SummaryId;
+
+        public int? SummaryId { get; set; }
+
         public Summary? Summary { get; set; }
 
         public int CategoryId { get; set; }

@@ -30,13 +30,14 @@ namespace DL.Repository
             return await _context.Files
                 .Include(f => f.Category)
                 .Include(f => f.User)
+                .Include(f => f.Summary)
                 .FirstOrDefaultAsync(f => f.Id == id);
         }
 
 
         public async Task<IEnumerable<UserFile>> GetAllAsync()
             {
-                return await _context.Files.Include(f => f.Category).Include(f => f.User).ToListAsync();
+                return await _context.Files.Include(f => f.Category).Include(f => f.User).Include(f => f.Summary).ToListAsync();
             }
 
             public async Task AddAsync(UserFile file)

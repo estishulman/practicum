@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using BL.IService;
 using BL.DTOs;
+using Microsoft.AspNetCore.Authorization;
 namespace VoiceSummarizer.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CategoryController : ControllerBase

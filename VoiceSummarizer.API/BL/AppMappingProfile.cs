@@ -20,7 +20,14 @@ namespace BL
            .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
 
-            CreateMap<UserFile, UserFileResponseDto>();
+            //CreateMap<UserFile, UserFileResponseDto>();
+            CreateMap<UserFile, UserFileResponseDto>()
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.Name))
+            .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
+            .ForMember(dest => dest.SummaryContent, opt => opt.MapFrom(src => src.Summary != null ? src.Summary.Content : null))
+            .ForMember(dest => dest.SummaryId, opt => opt.MapFrom(src => src.SummaryId));
+
+
             CreateMap<UserFileCreateDto, UserFile>();
             CreateMap<UserFileUpdateDto, UserFile>()
            .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));

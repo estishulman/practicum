@@ -14,6 +14,8 @@ namespace DL.IRepositories
             Task AddAsync(Summary summary);
             Task UpdateAsync(Summary summary);
             Task DeleteAsync(int id);
-      }
+            Task<Summary?> GetByFileIdAsync(int fileId);
+
+    }
 }
 

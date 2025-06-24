@@ -26,7 +26,7 @@ namespace BL.DTOs
         public string Email { get; set; } = string.Empty;
         [Required]
         public string Password { get; set; } = string.Empty;
-        //לפי מה יחליט את התפקיד?
+        public Role Role { get; set; } = Role.Regular; 
     }
 
     public class UserUpdateDto

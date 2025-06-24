@@ -12,11 +12,14 @@ namespace BL.IService
     {
         Task<UserResponseDto> GetUserByIdAsync(int id);
         Task<IEnumerable<UserResponseDto>> GetAllUsersAsync();
+        Task<IEnumerable<UserResponseDto>> GetLecturersAsync();
+
         Task<UserResponseDto> CreateUserAsync(UserCreateDto user);
         Task UpdateUserAsync(int id,UserUpdateDto user,int currentUserId);
         Task DeleteUserAsync(int id);
         Task<AuthResponseDto?> LoginAsync(UserLoginDto dto);
         public string GenerateToken(User user);
+
 
 
     }

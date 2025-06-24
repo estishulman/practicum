@@ -8,18 +8,7 @@ using System.Threading.Tasks;
 
 namespace BL.DTOs
 {
-    //public class UserFileResponseDto
-    //{
-    //    public int Id { get; set; }
-    //    public string FileName { get; set; } = string.Empty;
-    //    public string FileType { get; set; } = string.Empty;
-    //    public DateTime UploadDate { get; set; }
-    //    public string? Url { get; set; }
-    //    public string Status { get; set; } = "Pending";
-    //    public int CategoryId { get; set; }
-    //    public int UserId { get; set; }
-    //    public SummaryResponseDto? Summary { get; set; }
-    //}
+ 
     public class UserFileResponseDto
     {
         public int Id { get; set; }
@@ -30,8 +19,12 @@ namespace BL.DTOs
         public FileStatus Status { get; set; }
 
         public string UserName { get; set; } = string.Empty;
+        public int UserId { get; set; }
         public string CategoryName { get; set; } = string.Empty;
+        public int CategoryId { get; set; }
         public int? SummaryId { get; set; }
+        public string? SummaryContent { get; set; }
+
     }
 
     //public class UserFileCreateDto

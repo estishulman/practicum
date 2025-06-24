@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BL.IService;
 using BL.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace VoiceSummarizer.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -34,16 +36,12 @@ namespace VoiceSummarizer.API.Controllers
             return Ok(users);
         }
 
-        // POST: api/User
-        //[HttpPost]
-        //public async Task<ActionResult<UserResponseDto>> CreateUser([FromBody] UserCreateDto user)
-        //{
-        //    if (user == null)
-        //        return BadRequest();
-
-        //    var createdUser = await _userService.CreateUserAsync(user);
-        //    return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, createdUser);
-        //}
+        [HttpGet("lecturers")]
+        public async Task<ActionResult<IEnumerable<UserResponseDto>>> GetLecturers()
+        {
+            var lecturers = await _userService.GetLecturersAsync();
+            return Ok(lecturers);
+        }
 
         // PUT: api/User/{id}
         [HttpPut("{id}")]
@@ -62,20 +60,6 @@ namespace VoiceSummarizer.API.Controllers
             await _userService.DeleteUserAsync(id);
             return NoContent();
         }
-
-        //// POST: api/User/login
-        //[HttpPost("login")]
-        //public async Task<ActionResult<UserResponseDto>> Login([FromBody] UserLoginDto dto)
-        //{
-        //    var user = await _userService.LoginAsync(dto);
-        //    if (user == null)
-        //        return Unauthorized("Invalid email or password.");
-
-        //    return Ok(user);
-        //}
-
-        
-
     }
 
 }

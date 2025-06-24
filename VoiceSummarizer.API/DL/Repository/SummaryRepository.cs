@@ -56,6 +56,12 @@ namespace DL.Repository
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task<Summary?> GetByFileIdAsync(int fileId)
+        {
+            return await _context.Summaries
+                .FirstOrDefaultAsync(s => s.FileId == fileId);
+        }
+
     }
 
 }

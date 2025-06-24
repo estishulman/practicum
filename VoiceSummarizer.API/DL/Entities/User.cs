@@ -25,7 +25,8 @@ namespace DL.Entities
     public enum Role
     {
         Admin,
-        Regular
+        Regular,
+        lecturer
     }
 
 }
