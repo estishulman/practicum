@@ -30,7 +30,7 @@ namespace BL.Services
                 new AuthenticationHeaderValue("Bearer", _apiKey);
         }
 
-        public async Task<string> TranscribeFromAudioUrlAsync(string audioUrl)
+        public async Task<string> SummarizeFromAudioUrlAsync(string audioUrl)
         {
             _logger.LogInformation("[TranscribeFromAudioUrlAsync] Starting transcription for audio URL: {AudioUrl}", audioUrl);
 
