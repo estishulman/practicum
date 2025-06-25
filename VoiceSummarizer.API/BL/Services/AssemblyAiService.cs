@@ -1,13 +1,13 @@
 ﻿using BL.IService;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace BL.Services
 {
@@ -33,126 +33,85 @@ namespace BL.Services
         public async Task<string> SummarizeFromAudioUrlAsync(string audioUrl)
         {
             _logger.LogInformation("[SummarizeFromAudioUrlAsync] Starting summarization for audio URL: {AudioUrl}", audioUrl);
-
             if (string.IsNullOrEmpty(audioUrl))
-            {
-                _logger.LogError("[SummarizeFromAudioUrlAsync] Audio URL is null or empty");
                 throw new ArgumentException("Audio URL cannot be null or empty");
-            }
 
-            var payload = new
+            // שלב 1: שליחת בקשה ליצירת תמלול
+            var transcriptPayload = new
             {
                 audio_url = audioUrl,
-                summarization = true,
-                summary_type = "bullets",       // יכול להיות גם "gist" או "headline"
-                summary_model = "informative",   // זה מה שהיה חסר!
-                language = "he"  // קוד שפה לעברית
+                language_code = "he"
             };
+            var transcriptContent = new StringContent(JsonConvert.SerializeObject(transcriptPayload), Encoding.UTF8, "application/json");
+            var transcriptResponse = await _httpClient.PostAsync("https://api.assemblyai.com/v2/transcript", transcriptContent);
 
-            var json = JsonConvert.SerializeObject(payload);
-            _logger.LogInformation("[SummarizeFromAudioUrlAsync] Payload created: {Payload}", json);
-
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            _logger.LogInformation("[SummarizeFromAudioUrlAsync] Sending POST request to AssemblyAI");
-            var response = await _httpClient.PostAsync("https://api.assemblyai.com/v2/transcript", content);
-
-            _logger.LogInformation("[SummarizeFromAudioUrlAsync] POST response received. Status: {StatusCode}", response.StatusCode);
-
-            if (!response.IsSuccessStatusCode)
+            if (!transcriptResponse.IsSuccessStatusCode)
             {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                _logger.LogError("[SummarizeFromAudioUrlAsync] POST request failed. Status: {StatusCode}, Error: {ErrorContent}",
-                    response.StatusCode, errorContent);
-                throw new Exception($"AssemblyAI POST failed: {response.StatusCode} - {errorContent}");
+                var error = await transcriptResponse.Content.ReadAsStringAsync();
+                throw new Exception($"Failed to start transcription: {error}");
             }
 
-            var responseContent = await response.Content.ReadAsStringAsync();
-            _logger.LogInformation("[SummarizeFromAudioUrlAsync] POST response content: {ResponseContent}", responseContent);
-
-            var result = JsonConvert.DeserializeObject<JObject>(responseContent);
-            var transcriptId = result["id"]?.ToString();
+            var transcriptJson = JsonConvert.DeserializeObject<JObject>(await transcriptResponse.Content.ReadAsStringAsync());
+            var transcriptId = transcriptJson["id"]?.ToString();
 
             if (string.IsNullOrEmpty(transcriptId))
-            {
-                _logger.LogError("[SummarizeFromAudioUrlAsync] No transcript ID received from AssemblyAI");
-                throw new Exception("No transcript ID received from AssemblyAI");
-            }
+                throw new Exception("No transcript ID returned from AssemblyAI");
 
-            _logger.LogInformation("[SummarizeFromAudioUrlAsync] Transcript ID received: {TranscriptId}", transcriptId);
-            _logger.LogInformation("[SummarizeFromAudioUrlAsync] Starting polling for transcript completion");
+            _logger.LogInformation("Transcript ID: {TranscriptId}", transcriptId);
 
+            // שלב 2: המתנה שהתמלול יסתיים
+            string status = "";
+            JObject pollingJson = null;
             int pollCount = 0;
-            while (true)
+
+            do
             {
-                pollCount++;
-                _logger.LogInformation("[SummarizeFromAudioUrlAsync] Polling attempt #{PollCount} - waiting 3 seconds", pollCount);
-
                 await Task.Delay(3000);
-
-                _logger.LogInformation("[SummarizeFromAudioUrlAsync] Sending GET request for transcript status");
                 var pollingResponse = await _httpClient.GetAsync($"https://api.assemblyai.com/v2/transcript/{transcriptId}");
-
-                _logger.LogInformation("[SummarizeFromAudioUrlAsync] GET response received. Status: {StatusCode}", pollingResponse.StatusCode);
-
                 if (!pollingResponse.IsSuccessStatusCode)
                 {
-                    var errorContent = await pollingResponse.Content.ReadAsStringAsync();
-                    _logger.LogError("[SummarizeFromAudioUrlAsync] GET request failed. Status: {StatusCode}, Error: {ErrorContent}",
-                        pollingResponse.StatusCode, errorContent);
-                    throw new Exception($"AssemblyAI GET failed: {pollingResponse.StatusCode} - {errorContent}");
+                    var error = await pollingResponse.Content.ReadAsStringAsync();
+                    throw new Exception($"Polling failed: {error}");
                 }
 
                 var pollingContent = await pollingResponse.Content.ReadAsStringAsync();
-                _logger.LogInformation("[SummarizeFromAudioUrlAsync] GET response content: {ResponseContent}", pollingContent);
+                pollingJson = JsonConvert.DeserializeObject<JObject>(pollingContent);
+                status = pollingJson["status"]?.ToString();
+                pollCount++;
 
-                var pollingJson = JsonConvert.DeserializeObject<JObject>(pollingContent);
-                var status = pollingJson["status"]?.ToString();
+                if (pollCount > 100)
+                    throw new Exception("Polling timed out after 5 minutes");
 
-                _logger.LogInformation("[SummarizeFromAudioUrlAsync] Current transcript status: {Status}", status);
+            } while (status == "queued" || status == "processing");
 
-                if (status == "completed")
-                {
-                    var summary = pollingJson["summary"]?.ToString() ?? "";
-                    _logger.LogInformation("[SummarizeFromAudioUrlAsync] Transcript completed successfully. Summary length: {SummaryLength}",
-                        summary.Length);
-
-                    if (string.IsNullOrEmpty(summary))
-                    {
-                        _logger.LogWarning("[SummarizeFromAudioUrlAsync] Summary is empty or null");
-                        // נבדוק אם יש תמלול רגיל במקום
-                        var transcript = pollingJson["text"]?.ToString();
-                        if (!string.IsNullOrEmpty(transcript))
-                        {
-                            _logger.LogInformation("[SummarizeFromAudioUrlAsync] No summary available, but transcript exists. Transcript length: {TranscriptLength}",
-                                transcript.Length);
-                        }
-                    }
-
-                    return summary;
-                }
-                else if (status == "error")
-                {
-                    var error = pollingJson["error"]?.ToString();
-                    _logger.LogError("[SummarizeFromAudioUrlAsync] Transcript processing failed with error: {Error}", error);
-                    throw new Exception($"AssemblyAI processing failed: {error}");
-                }
-                else if (status == "processing" || status == "queued")
-                {
-                    _logger.LogInformation("[SummarizeFromAudioUrlAsync] Transcript still {Status}, continuing to poll...", status);
-
-                    // הוסף timeout למניעת loop אינסופי
-                    if (pollCount > 100) // 5 דקות בערך
-                    {
-                        _logger.LogError("[SummarizeFromAudioUrlAsync] Polling timeout reached after {PollCount} attempts", pollCount);
-                        throw new Exception($"AssemblyAI processing timeout after {pollCount} polling attempts");
-                    }
-                }
-                else
-                {
-                    _logger.LogWarning("[SummarizeFromAudioUrlAsync] Unknown status received: {Status}", status);
-                }
+            if (status == "error")
+            {
+                var error = pollingJson["error"]?.ToString();
+                throw new Exception($"Transcription failed: {error}");
             }
+
+            _logger.LogInformation("Transcription completed");
+
+            // שלב 3: בקשה לסיכום
+            var summaryPayload = new
+            {
+                summary_type = "bullets",
+                summary_model = "informative"
+            };
+
+            var summaryContent = new StringContent(JsonConvert.SerializeObject(summaryPayload), Encoding.UTF8, "application/json");
+            var summaryResponse = await _httpClient.PostAsync($"https://api.assemblyai.com/v2/transcript/{transcriptId}/summary", summaryContent);
+
+            if (!summaryResponse.IsSuccessStatusCode)
+            {
+                var error = await summaryResponse.Content.ReadAsStringAsync();
+                throw new Exception($"Summary request failed: {error}");
+            }
+
+            var summaryJson = JsonConvert.DeserializeObject<JObject>(await summaryResponse.Content.ReadAsStringAsync());
+            var summary = summaryJson["summary"]?.ToString();
+
+            return summary ?? "";
         }
     }
 }
