@@ -36,10 +36,13 @@ namespace BL.Services
             if (string.IsNullOrEmpty(audioUrl))
                 throw new ArgumentException("Audio URL cannot be null or empty");
 
-            // שלב 1: שליחת בקשה ליצירת תמלול
+            // שלב 1: שליחת בקשה עם בקשת תמלול + סיכום יחד
             var transcriptPayload = new
             {
                 audio_url = audioUrl,
+                summarization = true,
+                summary_type = "bullets", // אפשר גם "gist", "headline", "paragraph"
+                summary_model = "informative", // או "conversational"
                 language_code = "he"
             };
             var transcriptContent = new StringContent(JsonConvert.SerializeObject(transcriptPayload), Encoding.UTF8, "application/json");
@@ -59,7 +62,7 @@ namespace BL.Services
 
             _logger.LogInformation("Transcript ID: {TranscriptId}", transcriptId);
 
-            // שלב 2: המתנה שהתמלול יסתיים
+            // שלב 2: המתנה שהתמלול (והסיכום) יסתיים
             string status = "";
             JObject pollingJson = null;
             int pollCount = 0;
@@ -92,26 +95,14 @@ namespace BL.Services
 
             _logger.LogInformation("Transcription completed");
 
-            // שלב 3: בקשה לסיכום
-            var summaryPayload = new
-            {
-                summary_type = "bullets",
-                summary_model = "informative"
-            };
+            // שלב 3: קבלת הסיכום מתוך אותו JSON
+            var summary = pollingJson["summary"]?.ToString();
 
-            var summaryContent = new StringContent(JsonConvert.SerializeObject(summaryPayload), Encoding.UTF8, "application/json");
-            var summaryResponse = await _httpClient.PostAsync($"https://api.assemblyai.com/v2/transcript/{transcriptId}/summary", summaryContent);
+            if (string.IsNullOrEmpty(summary))
+                throw new Exception("Summary is empty or missing");
 
-            if (!summaryResponse.IsSuccessStatusCode)
-            {
-                var error = await summaryResponse.Content.ReadAsStringAsync();
-                throw new Exception($"Summary request failed: {error}");
-            }
-
-            var summaryJson = JsonConvert.DeserializeObject<JObject>(await summaryResponse.Content.ReadAsStringAsync());
-            var summary = summaryJson["summary"]?.ToString();
-
-            return summary ?? "";
+            return summary;
         }
+
     }
 }
