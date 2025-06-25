@@ -30,21 +30,20 @@ namespace BL.Services
                 new AuthenticationHeaderValue("Bearer", _apiKey);
         }
 
-        public async Task<string> SummarizeFromAudioUrlAsync(string audioUrl)
+        public async Task<string> TranscribeFromAudioUrlAsync(string audioUrl)
         {
-            _logger.LogInformation("[SummarizeFromAudioUrlAsync] Starting summarization for audio URL: {AudioUrl}", audioUrl);
+            _logger.LogInformation("[TranscribeFromAudioUrlAsync] Starting transcription for audio URL: {AudioUrl}", audioUrl);
+
             if (string.IsNullOrEmpty(audioUrl))
                 throw new ArgumentException("Audio URL cannot be null or empty");
 
-            // שלב 1: שליחת בקשה עם בקשת תמלול + סיכום יחד
+            // שלב 1: שליחת בקשת תמלול בלבד
             var transcriptPayload = new
             {
                 audio_url = audioUrl,
-                summarization = true,
-                summary_type = "bullets", // אפשר גם "gist", "headline", "paragraph"
-                summary_model = "informative", // או "conversational"
                 language_code = "he"
             };
+
             var transcriptContent = new StringContent(JsonConvert.SerializeObject(transcriptPayload), Encoding.UTF8, "application/json");
             var transcriptResponse = await _httpClient.PostAsync("https://api.assemblyai.com/v2/transcript", transcriptContent);
 
@@ -62,7 +61,7 @@ namespace BL.Services
 
             _logger.LogInformation("Transcript ID: {TranscriptId}", transcriptId);
 
-            // שלב 2: המתנה שהתמלול (והסיכום) יסתיים
+            // שלב 2: המתנה לתמלול בלבד
             string status = "";
             JObject pollingJson = null;
             int pollCount = 0;
@@ -95,14 +94,13 @@ namespace BL.Services
 
             _logger.LogInformation("Transcription completed");
 
-            // שלב 3: קבלת הסיכום מתוך אותו JSON
-            var summary = pollingJson["summary"]?.ToString();
+            // שלב 3: שליפת הטקסט המתומלל
+            var transcriptText = pollingJson["text"]?.ToString();
 
-            if (string.IsNullOrEmpty(summary))
-                throw new Exception("Summary is empty or missing");
+            if (string.IsNullOrEmpty(transcriptText))
+                throw new Exception("Transcription result is empty");
 
-            return summary;
+            return transcriptText;
         }
-
     }
 }

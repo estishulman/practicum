@@ -8,6 +8,6 @@ namespace BL.IService
 {
     public interface IAssemblyAiService
     {
-        Task<string> SummarizeFromAudioUrlAsync(string audioUrl);
+        Task<string> TranscribeFromAudioUrlAsync(string audioUrl);
     }
 }
